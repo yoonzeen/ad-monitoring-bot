@@ -1,0 +1,19 @@
+# 봇이 실행될 환경 (Playwright 전용 이미지)
+image: mcr.microsoft.com/playwright:v1.40.0-jammy
+
+# 실행 단계 정의
+stages:
+  - deploy
+
+# GitLab Pages 배포 작업
+pages:
+  stage: deploy
+  script:
+    - npm install                      # 1. 라이브러리 설치
+    - npx playwright install chromium  # 2. 브라우저 설치
+    - node monitor.js                  # 3. 봇 실행 (결과를 public 폴더에 생성)
+  artifacts:
+    paths:
+      - public                         # 4. public 폴더를 웹사이트로 호스팅
+  only:
+    - main                             # main 브랜치에 푸시될 때만 실행
