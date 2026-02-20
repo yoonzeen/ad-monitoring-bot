@@ -3,6 +3,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { chromium } from 'playwright'
 
+await mkdir('public', { recursive: true }); // 실행 전 폴더를 먼저 만들어야 함
+
 function getEnv(name, { required = false, defaultValue = undefined } = {}) {
   const value = process.env[name]
   if (value == null || value === '') {
