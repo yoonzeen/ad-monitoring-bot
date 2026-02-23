@@ -3,7 +3,7 @@
 이 레포는 **실제 브라우저(Playwright/Chromium)** 로 페이지를 열어 상태를 점검하고, 결과를 `public/monitor-report.json`로 저장합니다.  
 대시보드(React)는 이 JSON을 읽어 “이상 없음 / 이상 감지 / 고쳐야 할 항목”을 웹에서 확인할 수 있게 합니다.
 
-- **모니터 실행기**: `scripts/monitor.mjs` (`npm run monitor`)
+- **모니터 실행기**: `scripts/monitor.js` (`npm run monitor`)
 - **대시보드**: Vite + React (`npm run dev` / `npm run build`)
 - **결과 파일**: `public/monitor-report.json` (Vite 빌드 시 `dist/`로 복사됨)
 
@@ -55,7 +55,7 @@ npm run dev
 
 ## 환경변수
 
-`.env.example`을 기준으로, 실제로 `scripts/monitor.mjs`에서 사용하는 주요 값들입니다.
+`.env.example`을 기준으로, 실제로 `scripts/monitor.js`에서 사용하는 주요 값들입니다.
 
 ### 필수
 
@@ -127,16 +127,15 @@ npm run dev
 ## GitLab CI (참고)
 
 `.gitlab-ci.yml`이 포함되어 있습니다(Playwright 이미지 기반).  
-다만 현재 레포 기준으로는 스크립트/경로가 맞지 않는 부분이 있을 수 있으니, 사용 시 `npm run monitor`와 `scripts/monitor.mjs` 기준으로 조정하세요.
+다만 현재 레포 기준으로는 CI 구성/Pages 경로가 조직별로 달라질 수 있으니, 필요에 맞게 조정하세요.
 
-## 주의 (현재 소스 기준)
+## 주의
 
-- `.env.example`에는 `MONITOR_EXPECT_CONTAINS`, `MONITOR_EXPECT_NOT_CONTAINS`가 포함되어 있지만, 현재 `scripts/monitor.mjs`는 이 옵션을 완전히 반영하지 못할 수 있습니다.
-- `.gitlab-ci.yml`은 예시로 포함된 상태이며, 현재 레포의 스크립트 위치/이름과 다를 수 있습니다.
+- `.gitlab-ci.yml`은 예시로 포함된 상태이며, GitLab Pages 경로/변수는 조직 설정에 따라 다를 수 있습니다.
 
 ## 주요 파일
 
-- **`scripts/monitor.mjs`**: Playwright로 모니터링 후 리포트 생성
+- **`scripts/monitor.js`**: Playwright로 모니터링 후 리포트 생성
 - **`public/monitor-report.json`**: 최신 리포트(자동 생성/갱신, `.gitignore` 대상)
 - **`src/components/MonitorReportPanel.tsx`**: 리포트 로딩/표시 UI
 - **`src/monitor/types.ts`**: 리포트 타입 정의

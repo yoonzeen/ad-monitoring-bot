@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "monitor": "node ./scripts/monitor.mjs",
+    "monitor": "node ./scripts/monitor.js",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,17 +1,32 @@
-image: mcr.microsoft.com/playwright:v1.40.0-jammy
+image: mcr.microsoft.com/playwright:v1.58.2-jammy
 
 # 전역 타임아웃을 10분으로 넉넉하게 설정
 variables:
   FF_USE_FASTZIP: "true"
+  # Playwright Docker image already contains browsers.
+  # Avoid re-downloading browsers during `npm ci/install` (can be huge and lead to job timeouts).
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+  npm_config_fund: "false"
+  npm_config_audit: "false"
 
 pages:
   stage: deploy
   timeout: 10m  # 이 작업이 최대 10분까지 돌 수 있게 허용
   script:
-    - npm install
-    # 브라우저 설치 명령어는 생략 (이미지에 포함됨)
-    - mkdir -p public
-    - node monitor.js
+    - node --version
+    - npm --version
+    - npm ci
+    # Create/update monitor-report.json only when MONITOR_TARGET_URL exists.
+    - |
+      if [ -n "${MONITOR_TARGET_URL}" ]; then
+        npm run monitor
+      else
+        echo "Skipping monitor: MONITOR_TARGET_URL is not set"
+      fi
+    # Build dashboard for GitLab Pages
+    - VITE_BASE="/${CI_PROJECT_NAME}/" npm run build
+    - rm -rf public && mkdir -p public
+    - cp -r dist/* public/
   artifacts:
     paths:
       - public
