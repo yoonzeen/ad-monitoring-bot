@@ -4,12 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "monitor": "node ./scripts/monitor.js",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "monitor": "node monitor.js",
+  "test:local": "npm run monitor && npm run dev"
+},
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

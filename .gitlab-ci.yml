@@ -16,12 +16,25 @@ pages:
     - node --version
     - npm --version
     - npm ci
+    - mkdir -p public
     # Create/update monitor-report.json only when MONITOR_TARGET_URL exists.
     - |
       if [ -n "${MONITOR_TARGET_URL}" ]; then
-        npm run monitor
+        # Keep Pages deployment running even if monitoring fails.
+        npm run monitor || echo "Monitor failed (report should be written). Continuing..."
       else
         echo "Skipping monitor: MONITOR_TARGET_URL is not set"
+        cat > public/monitor-report.json <<'EOF'
+        {
+          "ok": false,
+          "url": "",
+          "status": 0,
+          "durationMs": 0,
+          "checkedAt": "",
+          "failures": ["MONITOR_TARGET_URL is not set"],
+          "diagnostics": { "pageErrors": [], "consoleMessages": [], "requestFailures": [] }
+        }
+        EOF
       fi
     # Build dashboard for GitLab Pages
     - VITE_BASE="/${CI_PROJECT_NAME}/" npm run build
