@@ -1,18 +1,20 @@
-# 광고 모니터링 봇 (브라우저 기반) + 대시보드
+# 광고 모니터링 봇 (Playwright) + 대시보드 (Vite/React)
 
-이 프로젝트는 **실제 브라우저(Playwright/Chromium)** 환경에서 페이지를 열어 광고/태그 관련 이상을 감지하고, 그 결과를 `monitor-report.json`로 저장한 뒤 **웹 페이지(대시보드)** 에서 “이상 없음 / 고쳐야 할 항목”으로 보여줍니다.
+이 레포는 **실제 브라우저(Playwright/Chromium)** 로 페이지를 열어 상태를 점검하고, 결과를 `public/monitor-report.json`로 저장합니다.  
+대시보드(React)는 이 JSON을 읽어 “이상 없음 / 이상 감지 / 고쳐야 할 항목”을 웹에서 확인할 수 있게 합니다.
 
-또한 GitHub Actions의 **cron 스케줄(매 1시간)** 로 자동 실행할 수 있고, 원하면 GitHub Pages로 대시보드를 배포해 **항상 최신 결과**를 확인할 수 있습니다.
+- **모니터 실행기**: `scripts/monitor.mjs` (`npm run monitor`)
+- **대시보드**: Vite + React (`npm run dev` / `npm run build`)
+- **결과 파일**: `public/monitor-report.json` (Vite 빌드 시 `dist/`로 복사됨)
 
 ## 무엇을 감지하나
 
-- **HTTP 상태 코드 이상**
-- **문자열 포함/미포함 규칙** (예: 특정 광고 스크립트가 들어갔는지)
-- **JS 런타임 에러**: `pageerror`
-- **콘솔 에러/경고**: `console`의 `error`/`warning`
-- **네트워크 실패**: `requestfailed` (기본은 “수집”만 하고 실패로 보진 않음)
+- **HTTP 상태 코드**: 2xx가 아니면 실패로 기록
+- **JS 런타임 에러**: `pageerror` 이벤트 수집 (옵션에 따라 실패 처리)
+- **콘솔 에러/경고**: `console`의 `error`/`warning` 수집 (옵션에 따라 실패 처리)
+- **네트워크 실패**: `requestfailed` 수집 (옵션에 따라 실패 처리)
 
-## 로컬 실행
+## 빠른 시작 (로컬)
 
 ### 1) 설치
 
@@ -26,71 +28,117 @@ Playwright 브라우저(Chromium)는 최초 1회 설치가 필요할 수 있습�
 npx playwright install chromium
 ```
 
-### 2) `.env` 설정 (권장)
+### 2) `.env` 설정
 
-`.env.example`을 `.env`로 복사해 값만 바꿉니다.
+`.env.example`을 `.env`로 복사 후 최소 `MONITOR_TARGET_URL`만 지정합니다.
 
-- `MONITOR_TARGET_URL`: 모니터링할 URL (필수)
+```bash
+MONITOR_TARGET_URL=https://example.com
+```
 
-그리고 실행합니다.
+### 3) 모니터 실행 (리포트 생성)
 
 ```bash
 npm run monitor
 ```
 
-성공/실패에 따라 `public/monitor-report.json`이 갱신됩니다.
+성공/실패 여부와 무관하게(설정에 따라) `public/monitor-report.json`이 갱신됩니다.
 
-### 3) 웹(대시보드)에서 결과 보기
-
-개발 서버를 켭니다.
+### 4) 대시보드 실행
 
 ```bash
 npm run dev
 ```
 
-페이지를 열면 `/monitor-report.json`을 읽어 다음을 표시합니다.
+대시보드는 `import.meta.env.BASE_URL + monitor-report.json`을 fetch 해서 결과를 보여줍니다.  
+리포트가 없으면 “리포트를 찾을 수 없습니다”로 표시됩니다.
 
-- 정상: **이상 없음**
-- 이상: **고쳐야 할 항목** + (펼쳐보기) JS/콘솔/네트워크 상세
+## 환경변수
 
-## 환경변수(옵션)
+`.env.example`을 기준으로, 실제로 `scripts/monitor.mjs`에서 사용하는 주요 값들입니다.
 
-자세한 기본값은 `.env.example`을 참고하세요.
+### 필수
 
-- **`MONITOR_FAIL_ON_PAGEERROR`**: JS 런타임 에러가 있으면 실패 처리 (기본 `true`)
-- **`MONITOR_FAIL_ON_CONSOLE_ERROR`**: console error가 있으면 실패 처리 (기본 `true`)
-- **`MONITOR_FAIL_ON_REQUEST_FAILED`**: requestfailed가 있으면 실패 처리 (기본 `false`)
+- **`MONITOR_TARGET_URL`**: 모니터링할 대상 URL
+
+### 출력
+
+- **`MONITOR_REPORT_PATH`**: 리포트 저장 경로 (기본 `public/monitor-report.json`)
+  - 값이 `none`(대소문자 무관) 또는 `0`이면 파일 저장을 생략합니다.
+
+### 타임아웃/대기
+
+- **`MONITOR_TIMEOUT_MS`**: Playwright 액션 기본 타임아웃 (기본 45000)
+- **`MONITOR_NAV_TIMEOUT_MS`**: 네비게이션 타임아웃 (기본 30000)
+- **`MONITOR_WAIT_AFTER_LOAD_MS`**: 로딩 후 추가 대기(ms) (기본 1500)
+
+### 실패 판정 옵션
+
+- **`MONITOR_FAIL_ON_PAGEERROR`**: `pageerror`가 있으면 실패로 기록 (기본 `true`)
+- **`MONITOR_FAIL_ON_CONSOLE_ERROR`**: console `error`가 있으면 실패로 기록 (기본 `true`)
+- **`MONITOR_FAIL_ON_REQUEST_FAILED`**: `requestfailed`가 있으면 실패로 기록 (기본 `false`)
 - **`MONITOR_IGNORE_ERROR_PATTERNS`**: 무시할 에러 패턴(부분 문자열) 목록 (콤마 구분)
-- **`MONITOR_NAV_TIMEOUT_MS`**, **`MONITOR_TIMEOUT_MS`**, **`MONITOR_WAIT_AFTER_LOAD_MS`**
 
-## GitHub Actions (매 1시간)
+### 기타
+
+- **`MONITOR_USER_AGENT`**: User-Agent (기본 `ad-monitoring-bot/1.0 (+https://github.com)`)
+
+## 리포트 포맷 (`public/monitor-report.json`)
+
+대시보드가 기대하는 타입은 `src/monitor/types.ts`의 `MonitorReport`입니다.
+
+```json
+{
+  "ok": true,
+  "url": "https://example.com",
+  "status": 200,
+  "durationMs": 1234,
+  "checkedAt": "2026-02-20T12:34:56.000Z",
+  "failures": [],
+  "diagnostics": {
+    "pageErrors": [{ "message": "…", "stack": "…" }],
+    "consoleMessages": [{ "type": "error|warning", "text": "…" }],
+    "requestFailures": [
+      { "url": "…", "method": "GET", "resourceType": "script", "errorText": "net::ERR_FAILED" }
+    ]
+  }
+}
+```
+
+- `ok`: 최종 성공 여부
+- `failures`: 사람이 읽을 수 있는 실패 사유 목록
+- `diagnostics`: 원인 파악용 상세 로그(에러/콘솔/네트워크)
+
+## GitHub Actions (스케줄 실행 + Pages 배포)
 
 워크플로 파일: `.github/workflows/ad-monitor.yml`
 
-### 1) Secrets 설정
+- **스케줄**: `cron: '0 * * * *'` (UTC 기준 매시간 정각)
+- **Node**: 20
+- **브라우저 설치**: `npx playwright install --with-deps chromium`
+- **리포트 업로드**: `public/monitor-report.json`을 artifact로 업로드
+- **Pages 배포(선택)**: `npm run build` 후 `dist/`를 GitHub Pages로 배포
+  - 이때 `VITE_BASE`를 `/<repo-name>/`로 주입해서 경로가 맞게 동작하도록 합니다. (`vite.config.ts` 참고)
 
-Repo → Settings → Secrets and variables → Actions → New repository secret
+필수 Secret:
 
-- **`MONITOR_TARGET_URL`** (필수)
+- **`MONITOR_TARGET_URL`**
 
-### 2) 스케줄
+## GitLab CI (참고)
 
-`cron: '0 * * * *'` 으로 **UTC 기준 매시간 정각**에 실행됩니다. (GitHub 스케줄은 약간의 지연이 있을 수 있습니다.)
+`.gitlab-ci.yml`이 포함되어 있습니다(Playwright 이미지 기반).  
+다만 현재 레포 기준으로는 스크립트/경로가 맞지 않는 부분이 있을 수 있으니, 사용 시 `npm run monitor`와 `scripts/monitor.mjs` 기준으로 조정하세요.
 
-각 실행은 `public/monitor-report.json`을 아티팩트로 업로드합니다.
+## 주의 (현재 소스 기준)
 
-## GitHub Pages로 대시보드 배포 (선택)
+- `.env.example`에는 `MONITOR_EXPECT_CONTAINS`, `MONITOR_EXPECT_NOT_CONTAINS`가 포함되어 있지만, 현재 `scripts/monitor.mjs`는 이 옵션을 완전히 반영하지 못할 수 있습니다.
+- `.gitlab-ci.yml`은 예시로 포함된 상태이며, 현재 레포의 스크립트 위치/이름과 다를 수 있습니다.
 
-이 워크플로는 모니터 실행 후 사이트를 빌드/배포하여, 대시보드에서 항상 최신 리포트를 볼 수 있게 합니다.
+## 주요 파일
 
-활성화 방법:
-
-- Repo → **Settings → Pages**
-- Source: **GitHub Actions**
-
-## 파일 구조 (핵심)
-
-- **`scripts/monitor.mjs`**: 브라우저 기반 모니터링 실행기(리포트 생성)
-- **`public/monitor-report.json`**: 최신 결과(자동 생성/갱신)
-- **`src/components/MonitorReportPanel.tsx`**: 리포트 UI 렌더링
+- **`scripts/monitor.mjs`**: Playwright로 모니터링 후 리포트 생성
+- **`public/monitor-report.json`**: 최신 리포트(자동 생성/갱신, `.gitignore` 대상)
+- **`src/components/MonitorReportPanel.tsx`**: 리포트 로딩/표시 UI
+- **`src/monitor/types.ts`**: 리포트 타입 정의
 - **`.github/workflows/ad-monitor.yml`**: 스케줄 실행 + Pages 배포
+- **`vite.config.ts`**: `VITE_BASE`로 배포 base 경로 제어
