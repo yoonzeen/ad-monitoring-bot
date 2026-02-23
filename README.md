@@ -31,8 +31,6 @@ npx playwright install chromium
 `.env.example`을 `.env`로 복사해 값만 바꿉니다.
 
 - `MONITOR_TARGET_URL`: 모니터링할 URL (필수)
-- `MONITOR_EXPECT_CONTAINS`: 반드시 포함돼야 하는 문자열(콤마로 여러 개) (선택)
-- `MONITOR_EXPECT_NOT_CONTAINS`: 포함되면 실패할 문자열(콤마로 여러 개) (선택)
 
 그리고 실행합니다.
 
@@ -74,9 +72,6 @@ npm run dev
 Repo → Settings → Secrets and variables → Actions → New repository secret
 
 - **`MONITOR_TARGET_URL`** (필수)
-- **`MONITOR_EXPECT_CONTAINS`** (선택)
-- **`MONITOR_EXPECT_NOT_CONTAINS`** (선택)
-- **`MONITOR_IGNORE_ERROR_PATTERNS`** (선택)
 
 ### 2) 스케줄
 

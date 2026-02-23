@@ -80,8 +80,6 @@ async function main() {
     defaultValue: 'ad-monitoring-bot/1.0 (+https://github.com)',
   })
 
-  const expectContains = parseList(getEnv('MONITOR_EXPECT_CONTAINS', { defaultValue: '' }))
-  const expectNotContains = parseList(getEnv('MONITOR_EXPECT_NOT_CONTAINS', { defaultValue: '' }))
   const reportPath = getEnv('MONITOR_REPORT_PATH', { defaultValue: 'public/monitor-report.json' })
 
   const failOnPageError = parseBool(getEnv('MONITOR_FAIL_ON_PAGEERROR', { defaultValue: 'true' }), true)

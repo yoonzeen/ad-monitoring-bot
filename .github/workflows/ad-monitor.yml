@@ -22,8 +22,6 @@ jobs:
     env:
       # Keep the URL in a secret if it contains query params.
       MONITOR_TARGET_URL: ${{ secrets.MONITOR_TARGET_URL }}
-      MONITOR_EXPECT_CONTAINS: ${{ secrets.MONITOR_EXPECT_CONTAINS }}
-      MONITOR_EXPECT_NOT_CONTAINS: ${{ secrets.MONITOR_EXPECT_NOT_CONTAINS }}
       MONITOR_TIMEOUT_MS: '20000'
       MONITOR_USER_AGENT: 'ad-monitoring-bot/1.0 (github-actions)'
       MONITOR_REPORT_PATH: public/monitor-report.json

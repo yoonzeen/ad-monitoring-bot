@@ -1,18 +1,17 @@
-# Playwright와 브라우저가 이미 포함된 이미지를 사용하여 설치 시간을 줄입니다.
 image: mcr.microsoft.com/playwright:v1.40.0-jammy
 
-# 전체 작업에 타임아웃 10분을 부여 (기본보다 넉넉하게)
+# 전역 타임아웃을 10분으로 넉넉하게 설정
 variables:
-  NODE_OPTIONS: "--max-old-space-size=4096"
+  FF_USE_FASTZIP: "true"
 
 pages:
   stage: deploy
-  timeout: 10m                      # 이 작업에 10분이라는 시간을 충분히 줌
+  timeout: 10m  # 이 작업이 최대 10분까지 돌 수 있게 허용
   script:
-    - npm install                  # 필요한 패키지만 설치
-    # 브라우저 설치(npx playwright install)는 이미지에 포함되어 있어 생략 가능합니다.
-    - mkdir -p public              # 결과 폴더 생성
-    - node monitor.js              # 봇 실행
+    - npm install
+    # 브라우저 설치 명령어는 생략 (이미지에 포함됨)
+    - mkdir -p public
+    - node monitor.js
   artifacts:
     paths:
       - public
