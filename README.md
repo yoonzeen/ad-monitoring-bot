@@ -38,6 +38,9 @@ npx playwright install chromium
 MONITOR_TARGET_URL=https://example.com
 ```
 
+> 참고: 프로젝트에는 `MONITOR_TARGET_URL`의 **기본값(fallback)** 이 설정되어 있습니다.  
+> 로컬은 `.env`가 없거나 값이 비어있으면 기본 URL로 실행되고, GitHub Actions도 Variables/Secrets가 비어있으면 기본 URL로 실행됩니다.
+
 ### 3) 모니터 실행 (리포트 생성)
 
 ```bash
