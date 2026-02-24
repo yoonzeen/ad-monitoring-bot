@@ -70,6 +70,12 @@ jobs:
           VITE_BASE: /${{ github.event.repository.name }}/
         run: npm run build
 
+      - name: Ensure report is deployed
+        run: |
+          mkdir -p dist
+          cp public/monitor-report.json dist/monitor-report.json
+          ls -la dist | sed -n '1,120p'
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
