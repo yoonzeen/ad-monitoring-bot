@@ -20,9 +20,8 @@ jobs:
       pages: write
       id-token: write
     env:
-      # Prefer repo Variables; fallback to Secrets.
-      # (Settings → Secrets and variables → Actions → Variables/Secrets)
-      MONITOR_TARGET_URL: ${{ vars.MONITOR_TARGET_URL || secrets.MONITOR_TARGET_URL }}
+      # Project default (can still be overridden by repository Variables/Secrets if needed).
+      MONITOR_TARGET_URL: ${{ vars.MONITOR_TARGET_URL || secrets.MONITOR_TARGET_URL || 'https://m.news.nate.com/view/20260223n02867?issue_sq=10477' }}
       MONITOR_IGNORE_ERROR_PATTERNS: ${{ vars.MONITOR_IGNORE_ERROR_PATTERNS || secrets.MONITOR_IGNORE_ERROR_PATTERNS }}
       MONITOR_TIMEOUT_MS: '20000'
       MONITOR_USER_AGENT: 'ad-monitoring-bot/1.0 (github-actions)'
@@ -46,6 +45,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run monitor (or write placeholder report)
+        continue-on-error: true
         run: |
           mkdir -p public
           if [ -n "${MONITOR_TARGET_URL}" ]; then

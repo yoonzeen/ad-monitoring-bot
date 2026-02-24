@@ -70,7 +70,9 @@ async function ensureParentDir(filePath) {
 async function main() {
   await loadDotEnv()
 
-  const targetUrl = getEnv('MONITOR_TARGET_URL', { required: true })
+  const targetUrl = getEnv('MONITOR_TARGET_URL', {
+    defaultValue: 'https://m.news.nate.com/view/20260223n02867?issue_sq=10477',
+  })
   const timeoutMs = Number(getEnv('MONITOR_TIMEOUT_MS', { defaultValue: '45000' }))
   const navTimeoutMs = Number(getEnv('MONITOR_NAV_TIMEOUT_MS', { defaultValue: '30000' }))
   const afterLoadWaitMs = Number(getEnv('MONITOR_WAIT_AFTER_LOAD_MS', { defaultValue: '1500' }))
