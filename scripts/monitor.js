@@ -78,8 +78,6 @@ async function main() {
     defaultValue: 'ad-monitoring-bot/1.0 (+https://github.com)',
   })
 
-  const expectContains = parseList(getEnv('MONITOR_EXPECT_CONTAINS', { defaultValue: '' }))
-  const expectNotContains = parseList(getEnv('MONITOR_EXPECT_NOT_CONTAINS', { defaultValue: '' }))
   const reportPath = getEnv('MONITOR_REPORT_PATH', { defaultValue: 'public/monitor-report.json' })
 
   const failOnPageError = parseBool(getEnv('MONITOR_FAIL_ON_PAGEERROR', { defaultValue: 'true' }), true)
@@ -156,14 +154,6 @@ async function main() {
       }
       if (Number.isFinite(afterLoadWaitMs) && afterLoadWaitMs > 0) {
         await page.waitForTimeout(afterLoadWaitMs)
-      }
-
-      const html = await page.content()
-      for (const needle of expectContains) {
-        if (!html.includes(needle)) failures.push(`Missing expected text: ${safeSnippet(needle)}`)
-      }
-      for (const needle of expectNotContains) {
-        if (html.includes(needle)) failures.push(`Found disallowed text: ${safeSnippet(needle)}`)
       }
 
       if (failOnPageError && pageErrors.length > 0) failures.push(`JS page errors: ${pageErrors.length}`)

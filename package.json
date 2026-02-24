@@ -4,11 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "monitor": "node monitor.js",
-  "test:local": "npm run monitor && npm run dev"
-},
+    "preinstall": "node ./scripts/check-node.cjs",
+    "dev": "node ./scripts/check-node.cjs && vite",
+    "build": "node ./scripts/check-node.cjs && vite build",
+    "monitor": "node ./scripts/check-node.cjs && node ./monitor.js",
+    "preview": "node ./scripts/check-node.cjs && vite preview",
+    "test:local": "npm run monitor && npm run dev"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

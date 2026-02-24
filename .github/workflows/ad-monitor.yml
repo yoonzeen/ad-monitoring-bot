@@ -20,8 +20,10 @@ jobs:
       pages: write
       id-token: write
     env:
-      # Keep the URL in a secret if it contains query params.
-      MONITOR_TARGET_URL: ${{ secrets.MONITOR_TARGET_URL }}
+      # Prefer repo Variables; fallback to Secrets.
+      # (Settings → Secrets and variables → Actions → Variables/Secrets)
+      MONITOR_TARGET_URL: ${{ vars.MONITOR_TARGET_URL || secrets.MONITOR_TARGET_URL }}
+      MONITOR_IGNORE_ERROR_PATTERNS: ${{ vars.MONITOR_IGNORE_ERROR_PATTERNS || secrets.MONITOR_IGNORE_ERROR_PATTERNS }}
       MONITOR_TIMEOUT_MS: '20000'
       MONITOR_USER_AGENT: 'ad-monitoring-bot/1.0 (github-actions)'
       MONITOR_REPORT_PATH: public/monitor-report.json
@@ -40,10 +42,28 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers (Chromium)
+        if: env.MONITOR_TARGET_URL != ''
         run: npx playwright install --with-deps chromium
 
-      - name: Run monitor
-        run: npm run monitor
+      - name: Run monitor (or write placeholder report)
+        run: |
+          mkdir -p public
+          if [ -n "${MONITOR_TARGET_URL}" ]; then
+            npm run monitor
+          else
+            echo "MONITOR_TARGET_URL is not set. Skipping monitor."
+            cat > public/monitor-report.json <<'EOF'
+            {
+              "ok": false,
+              "url": "",
+              "status": 0,
+              "durationMs": 0,
+              "checkedAt": "",
+              "failures": ["MONITOR_TARGET_URL is not set"],
+              "diagnostics": { "pageErrors": [], "consoleMessages": [], "requestFailures": [] }
+            }
+            EOF
+          fi
 
       - name: Build site (for GitHub Pages)
         env:
@@ -78,7 +98,7 @@ jobs:
               'Monitoring run failed.',
               '',
               `- Workflow run: ${runUrl}`,
-              `- Target: ${(process.env.MONITOR_TARGET_URL && '(stored in secret)') || '(missing MONITOR_TARGET_URL secret)'}`,
+              `- Target: ${(process.env.MONITOR_TARGET_URL && '(configured)') || '(missing MONITOR_TARGET_URL variable/secret)'}`,
               '',
               'Check the workflow logs and the uploaded artifact `monitor-report` for details.',
             ].join('\n');
