@@ -25,7 +25,8 @@ jobs:
       MONITOR_IGNORE_ERROR_PATTERNS: ${{ vars.MONITOR_IGNORE_ERROR_PATTERNS || secrets.MONITOR_IGNORE_ERROR_PATTERNS }}
       MONITOR_TIMEOUT_MS: '20000'
       MONITOR_USER_AGENT: 'ad-monitoring-bot/1.0 (github-actions)'
-      MONITOR_REPORT_PATH: public/monitor-report.json
+      # Write directly into dist so Pages can serve it.
+      MONITOR_REPORT_PATH: dist/monitor-report.json
 
     steps:
       - name: Checkout
@@ -44,15 +45,20 @@ jobs:
         if: env.MONITOR_TARGET_URL != ''
         run: npx playwright install --with-deps chromium
 
+      - name: Build site (for GitHub Pages)
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
+        run: npm run build
+
       - name: Run monitor (or write placeholder report)
         continue-on-error: true
         run: |
-          mkdir -p public
+          mkdir -p dist
           if [ -n "${MONITOR_TARGET_URL}" ]; then
             npm run monitor
           else
             echo "MONITOR_TARGET_URL is not set. Skipping monitor."
-            cat > public/monitor-report.json <<'EOF'
+            cat > dist/monitor-report.json <<'EOF'
             {
               "ok": false,
               "url": "",
@@ -64,17 +70,7 @@ jobs:
             }
             EOF
           fi
-
-      - name: Build site (for GitHub Pages)
-        env:
-          VITE_BASE: /${{ github.event.repository.name }}/
-        run: npm run build
-
-      - name: Ensure report is deployed
-        run: |
-          mkdir -p dist
-          cp public/monitor-report.json dist/monitor-report.json
-          ls -la dist | sed -n '1,120p'
+          ls -la dist | sed -n '1,160p'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -89,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: monitor-report
-          path: public/monitor-report.json
+          path: dist/monitor-report.json
           if-no-files-found: ignore
 
       - name: Create issue on scheduled failure
