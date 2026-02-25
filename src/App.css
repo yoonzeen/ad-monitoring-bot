@@ -1,26 +1,85 @@
 .app {
-  width: min(960px, 100%);
+  width: min(1040px, 100%);
   margin: 0 auto;
-  padding: 24px;
+  padding: 28px 22px 36px;
+  min-width: 0;
 }
 
 .top {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  padding: 16px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(900px 220px at 0% 0%, rgba(124, 136, 255, 0.16), transparent 60%),
+    radial-gradient(720px 240px at 100% 0%, rgba(82, 209, 255, 0.12), transparent 55%),
+    var(--panel);
+  box-shadow: var(--shadow2);
+  backdrop-filter: blur(10px);
 }
 
 .title {
   margin: 0;
-  font-size: 28px;
+  font-size: 30px;
   line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.mascot {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  align-self: center;
+}
+
+.mascotImg,
+.mascotFallback {
+  width: 148px;
+  height: 148px;
+  border-radius: 18px;
+}
+
+.mascotImg {
+  display: block;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  background: var(--panel);
+}
+
+.mascotFallback {
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  font-size: 14px;
+  color: var(--muted);
+  border: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+  background: var(--panel);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.mascotCaption {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 180px;
+  line-height: 1.25;
 }
 
 .subtitle {
   margin: 6px 0 0;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -30,10 +89,14 @@
 }
 
 .panel {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel);
   overflow: hidden;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  animation: pop 240ms ease-out both;
+  min-width: 0;
 }
 
 .panelHeader {
@@ -42,8 +105,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+  background: var(--panel2);
 }
 
 .panelTitle {
@@ -70,18 +133,33 @@
   font-size: 12px;
   letter-spacing: 0.04em;
   margin-bottom: 12px;
+  position: relative;
+  gap: 8px;
+}
+.statusBadge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .statusBadge.ok {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: color-mix(in srgb, var(--ok) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ok) 42%, var(--border));
   color: rgba(187, 247, 208, 0.98);
+}
+.statusBadge.ok::before {
+  background: color-mix(in srgb, var(--ok) 82%, white 18%);
 }
 
 .statusBadge.fail {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: color-mix(in srgb, var(--fail) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fail) 42%, var(--border));
   color: rgba(254, 202, 202, 0.98);
+}
+.statusBadge.fail::before {
+  background: color-mix(in srgb, var(--fail) 78%, white 22%);
 }
 
 .kv {
@@ -98,28 +176,29 @@
 }
 
 .kv dt {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
 }
 
 .kv dd {
   margin: 0;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .okBox,
 .failBox {
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 12px 12px;
 }
 
 .okBox {
-  border: 1px solid rgba(34, 197, 94, 0.25);
-  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid color-mix(in srgb, var(--ok) 28%, var(--border));
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
 }
 
 .failBox {
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid color-mix(in srgb, var(--fail) 28%, var(--border));
+  background: color-mix(in srgb, var(--fail) 8%, transparent);
 }
 
 .failTitle {
@@ -139,32 +218,47 @@
 }
 
 .diagItem {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
   padding: 10px 12px;
 }
 
 .diagItem summary {
   cursor: pointer;
   font-weight: 700;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  column-gap: 10px;
+  padding: 4px 0;
+  user-select: none;
+}
+.diagItem summary::-webkit-details-marker {
+  display: none;
+}
+.diagItem summary::after {
+  content: '▾';
+  opacity: 0.75;
+  transform: translateY(-1px);
+  margin-left: 10px;
+}
+details[open].diagItem summary::after {
+  content: '▴';
 }
 
 .count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  justify-self: end;
   min-width: 22px;
   height: 22px;
   padding: 0 8px;
   border-radius: 999px;
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--panel2) 70%, transparent);
+  border: 1px solid var(--border);
 }
 
 .diagList {
@@ -179,18 +273,22 @@
 }
 
 .diagUrl {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
   word-break: break-word;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .diagStack {
   margin: 6px 0 0;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
+  max-width: 100%;
   overflow: auto;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--border);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -205,42 +303,56 @@
   font-size: 11px;
   letter-spacing: 0.02em;
   margin-right: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--panel2) 70%, transparent);
 }
 
 .pill.error {
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.12);
+  border-color: color-mix(in srgb, var(--fail) 48%, var(--border));
+  background: color-mix(in srgb, var(--fail) 12%, transparent);
 }
 
 .pill.warning {
-  border-color: rgba(234, 179, 8, 0.35);
-  background: rgba(234, 179, 8, 0.12);
+  border-color: color-mix(in srgb, var(--warn) 52%, var(--border));
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
 }
 
 .pill.info {
-  border-color: rgba(59, 130, 246, 0.35);
-  background: rgba(59, 130, 246, 0.12);
+  border-color: color-mix(in srgb, var(--accent2) 38%, var(--border));
+  background: color-mix(in srgb, var(--accent2) 10%, transparent);
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
   margin: 0 0 10px;
 }
 
-@media (prefers-color-scheme: light) {
-  .subtitle,
-  .muted,
+@media (max-width: 560px) {
+  .top {
+    align-items: flex-start;
+  }
+  .mascot {
+    justify-items: end;
+    width: 100%;
+  }
+
+  .kv > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
   .kv dt {
-    color: rgba(0, 0, 0, 0.62);
+    font-size: 12px;
   }
-  .panel {
-    border-color: rgba(0, 0, 0, 0.12);
-    background: rgba(0, 0, 0, 0.02);
+}
+
+@keyframes pop {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
   }
-  .panelHeader {
-    border-bottom-color: rgba(0, 0, 0, 0.08);
-    background: rgba(0, 0, 0, 0.03);
+  to {
+    transform: translateY(0px);
+    opacity: 1;
   }
 }

@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { MonitorReport } from '../monitor/types'
+import type { MonitorHistoryEntry, MonitorReport } from '../monitor/types'
 
 type LoadState =
   | { kind: 'idle' | 'loading' }
   | { kind: 'error'; message: string }
   | { kind: 'loaded'; report: MonitorReport }
+
+type HistoryState =
+  | { kind: 'idle' | 'loading' }
+  | { kind: 'error'; message: string }
+  | { kind: 'loaded'; items: MonitorHistoryEntry[] }
 
 function formatDate(iso: string) {
   const d = new Date(iso)
@@ -14,6 +19,7 @@ function formatDate(iso: string) {
 
 export function MonitorReportPanel() {
   const [state, setState] = useState<LoadState>({ kind: 'idle' })
+  const [history, setHistory] = useState<HistoryState>({ kind: 'idle' })
 
   const load = useCallback(async () => {
     setState({ kind: 'loading' })
@@ -49,9 +55,25 @@ export function MonitorReportPanel() {
     }
   }, [])
 
+  const loadHistory = useCallback(async () => {
+    setHistory({ kind: 'loading' })
+    try {
+      const cacheBust = Date.now()
+      const historyUrl = `${import.meta.env.BASE_URL}history.json?ts=${cacheBust}`
+      const res = await fetch(historyUrl, { headers: { accept: 'application/json' } })
+      if (!res.ok) throw new Error(`히스토리를 불러오지 못했습니다. (HTTP ${res.status})`)
+      const data = (await res.json()) as unknown
+      if (!Array.isArray(data)) throw new Error('히스토리 형식이 예상과 다릅니다.')
+      setHistory({ kind: 'loaded', items: data as MonitorHistoryEntry[] })
+    } catch (e) {
+      setHistory({ kind: 'error', message: e instanceof Error ? e.message : String(e) })
+    }
+  }, [])
+
   useEffect(() => {
     void load()
-  }, [load])
+    void loadHistory()
+  }, [load, loadHistory])
 
   const header = useMemo(() => {
     if (state.kind === 'loaded') {
@@ -74,10 +96,6 @@ export function MonitorReportPanel() {
 
       {state.kind === 'loaded' ? (
         <div className="panelBody">
-          <div className={`statusBadge ${state.report.ok ? 'ok' : 'fail'}`}>
-            {state.report.ok ? 'OK' : 'FAIL'}
-          </div>
-
           <dl className="kv">
             <div>
               <dt>대상 URL</dt>
@@ -86,10 +104,6 @@ export function MonitorReportPanel() {
                   {state.report.url}
                 </a>
               </dd>
-            </div>
-            <div>
-              <dt>HTTP</dt>
-              <dd>{state.report.status}</dd>
             </div>
             <div>
               <dt>체크 시각</dt>
@@ -174,6 +188,49 @@ export function MonitorReportPanel() {
               </details>
             </div>
           ) : null}
+
+          <div className="history">
+            <details className="diagItem">
+              <summary>
+                최근 실행 기록 <span className="count">{history.kind === 'loaded' ? history.items.length : 0}</span>
+              </summary>
+              <div style={{ marginTop: 10 }}>
+                <button type="button" onClick={loadHistory} disabled={history.kind === 'loading'}>
+                  기록 새로고침
+                </button>
+              </div>
+
+              {history.kind === 'loaded' ? (
+                <ul className="diagList">
+                  {history.items.slice(0, 30).map((it, idx) => (
+                    <li key={`${idx}-${it.checkedAt}`}>
+                      <div className="diagMain">
+                        <span className={`pill ${it.ok ? 'info' : 'error'}`}>{it.ok ? 'OK' : 'FAIL'}</span>
+                        {formatDate(it.checkedAt)} / HTTP {it.status} / {it.durationMs}ms
+                      </div>
+                      <div className="diagUrl">
+                        {it.counts?.consoleErrors ? `console error ${it.counts.consoleErrors} ` : ''}
+                        {it.counts?.pageErrors ? `pageerror ${it.counts.pageErrors} ` : ''}
+                        {it.counts?.requestFailures ? `requestfailed ${it.counts.requestFailures} ` : ''}
+                        {it.failures?.length ? `failures ${it.failures.length}` : ''}
+                      </div>
+                      {it.meta?.runUrl ? (
+                        <div className="diagUrl">
+                          <a href={it.meta.runUrl} target="_blank" rel="noreferrer">
+                            workflow run 보기
+                          </a>
+                        </div>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : history.kind === 'error' ? (
+                <p className="muted">{history.message}</p>
+              ) : (
+                <p className="muted">불러오는 중…</p>
+              )}
+            </details>
+          </div>
         </div>
       ) : state.kind === 'error' ? (
         <div className="panelBody">

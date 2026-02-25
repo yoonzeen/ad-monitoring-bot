@@ -1,11 +1,27 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji',
+    'Segoe UI Emoji';
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --bg0: #0b1020;
+  --bg1: #0a0f1c;
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+  --border: rgba(255, 255, 255, 0.12);
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel2: rgba(0, 0, 0, 0.18);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+  --shadow2: 0 8px 22px rgba(0, 0, 0, 0.24);
+  --accent: #7c88ff;
+  --accent2: #52d1ff;
+  --ok: #22c55e;
+  --fail: #ef4444;
+  --warn: #eab308;
+
+  color: var(--text);
+  background-color: var(--bg0);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,13 +29,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
+  color: color-mix(in srgb, var(--accent) 92%, white 8%);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: color-mix(in srgb, var(--accent2) 92%, white 8%);
 }
 
 body {
@@ -27,6 +49,24 @@ body {
   display: block;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(900px 520px at 10% -10%, rgba(124, 136, 255, 0.28), transparent 60%),
+    radial-gradient(820px 540px at 105% 10%, rgba(82, 209, 255, 0.22), transparent 55%),
+    radial-gradient(680px 520px at 40% 110%, rgba(239, 68, 68, 0.14), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 h1 {
@@ -34,18 +74,37 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0.58em 1.0em;
+  font-size: 0.95em;
+  font-weight: 650;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.06)),
+    rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 button:hover {
-  border-color: #646cff;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+button:active {
+  transform: translateY(0px);
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 button:focus,
 button:focus-visible {
@@ -54,13 +113,17 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --bg0: #f7f8ff;
+    --bg1: #ffffff;
+    --text: rgba(10, 15, 28, 0.92);
+    --muted: rgba(10, 15, 28, 0.62);
+    --border: rgba(10, 15, 28, 0.12);
+    --panel: rgba(10, 15, 28, 0.03);
+    --panel2: rgba(10, 15, 28, 0.04);
+    --shadow: 0 18px 44px rgba(16, 24, 40, 0.12);
+    --shadow2: 0 10px 22px rgba(16, 24, 40, 0.08);
   }
   a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+    color: #3b4bff;
   }
 }

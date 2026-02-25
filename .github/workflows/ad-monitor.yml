@@ -75,6 +75,15 @@ jobs:
           fi
           ls -la dist | sed -n '1,160p'
 
+      - name: Update history.json (append)
+        env:
+          HISTORY_SOURCE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/history.json
+          REPORT_PATH: dist/monitor-report.json
+          HISTORY_PATH: dist/history.json
+          HISTORY_MAX: '720'
+          GITHUB_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node ./scripts/update-history.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

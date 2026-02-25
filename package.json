@@ -8,6 +8,7 @@
     "dev": "node ./scripts/check-node.cjs && vite",
     "build": "node ./scripts/check-node.cjs && vite build",
     "monitor": "node ./scripts/check-node.cjs && node ./monitor.js",
+    "history:update": "node ./scripts/check-node.cjs && node ./scripts/update-history.js",
     "preview": "node ./scripts/check-node.cjs && vite preview",
     "test:local": "npm run monitor && npm run dev"
   },

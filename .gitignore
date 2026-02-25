@@ -29,3 +29,4 @@ dist-ssr
 # Monitor outputs
 monitor-report.json
 public/monitor-report.json
+public/history.json

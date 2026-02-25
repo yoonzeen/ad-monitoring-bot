@@ -12,3 +12,23 @@ export type MonitorReport = {
   }
 }
 
+export type MonitorHistoryEntry = {
+  checkedAt: string
+  ok: boolean
+  url: string
+  status: number
+  durationMs: number
+  failures: string[]
+  counts: {
+    pageErrors: number
+    consoleErrors: number
+    consoleWarnings: number
+    requestFailures: number
+  }
+  meta?: {
+    runId?: string
+    runUrl?: string
+    sha?: string
+  }
+}
+

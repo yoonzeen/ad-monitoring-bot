@@ -114,6 +114,15 @@ npm run dev
 - `failures`: 사람이 읽을 수 있는 실패 사유 목록
 - `diagnostics`: 원인 파악용 상세 로그(에러/콘솔/네트워크)
 
+## 데이터 축적(히스토리)
+
+기본 리포트(`monitor-report.json`)는 “최신 1건”이지만, 배포 환경에서는 매 실행 결과를 `history.json`에 계속 누적합니다.
+
+- 최신 결과: `https://yoonzeen.github.io/ad-monitoring-bot/monitor-report.json`
+- 누적 기록: `https://yoonzeen.github.io/ad-monitoring-bot/history.json`
+
+대시보드 화면 하단의 **최근 실행 기록**에서 최근 N건을 바로 확인할 수 있습니다.
+
 ## GitHub Actions (스케줄 실행 + Pages 배포)
 
 워크플로 파일: `.github/workflows/ad-monitor.yml`
@@ -121,7 +130,7 @@ npm run dev
 - **스케줄**: `cron: '0 * * * *'` (UTC 기준 매시간 정각)
 - **Node**: 20
 - **브라우저 설치**: `npx playwright install --with-deps chromium`
-- **리포트 업로드**: `public/monitor-report.json`을 artifact로 업로드
+- **리포트 업로드**: Pages용 `dist/monitor-report.json`을 artifact로 업로드
 - **Pages 배포(선택)**: `npm run build` 후 `dist/`를 GitHub Pages로 배포
   - 이때 `VITE_BASE`를 `/<repo-name>/`로 주입해서 경로가 맞게 동작하도록 합니다. (`vite.config.ts` 참고)
 
