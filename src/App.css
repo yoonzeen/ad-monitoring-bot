@@ -217,6 +217,43 @@
   gap: 10px;
 }
 
+.diagChips {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel2) 65%, transparent);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chip b {
+  color: var(--text);
+  font-weight: 900;
+}
+
+.diagSections {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.diagSectionTitle {
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .diagItem {
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -325,6 +362,56 @@ details[open].diagItem summary::after {
 .muted {
   color: var(--muted);
   margin: 0 0 10px;
+}
+
+.btnGhostWrap {
+  margin-top:10px;
+  text-align:center;
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--panel2) 40%, transparent);
+  color: var(--text);
+  box-shadow: none;
+  margin:0 auto 20px;
+}
+
+.btnGhost:hover {
+  border-color: color-mix(in srgb, var(--accent2) 45%, var(--border));
+  background: color-mix(in srgb, var(--panel2) 65%, transparent);
+  transform: translateY(-1px);
+}
+
+.btnGhost:active {
+  transform: translateY(0px);
+}
+
+.btnGhost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btnIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel2) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.history {
+  margin-top: 18px;
 }
 
 @media (max-width: 560px) {

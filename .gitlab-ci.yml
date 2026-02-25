@@ -16,30 +16,44 @@ pages:
     - node --version
     - npm --version
     - npm ci
-    - mkdir -p public
-    # Create/update monitor-report.json only when MONITOR_TARGET_URL exists.
+    # Build dashboard for GitLab Pages
+    - VITE_BASE="/${CI_PROJECT_NAME}/" npm run build
+
+    # Generate monitor-report.json into dist/ so it is always deployed.
     - |
+      mkdir -p dist
       if [ -n "${MONITOR_TARGET_URL}" ]; then
-        # Keep Pages deployment running even if monitoring fails.
-        npm run monitor || echo "Monitor failed (report should be written). Continuing..."
+        MONITOR_REPORT_PATH="dist/monitor-report.json" npm run monitor || true
       else
         echo "Skipping monitor: MONITOR_TARGET_URL is not set"
-        cat > public/monitor-report.json <<'EOF'
+      fi
+      if [ ! -f dist/monitor-report.json ]; then
+        echo "monitor-report.json was not produced. Writing placeholder."
+        cat > dist/monitor-report.json <<'EOF'
         {
           "ok": false,
           "url": "",
           "status": 0,
           "durationMs": 0,
           "checkedAt": "",
-          "failures": ["MONITOR_TARGET_URL is not set"],
+          "failures": ["monitor-report.json was not produced (monitor crashed or misconfigured)"],
           "diagnostics": { "pageErrors": [], "consoleMessages": [], "requestFailures": [] }
         }
         EOF
       fi
-    # Build dashboard for GitLab Pages
-    - VITE_BASE="/${CI_PROJECT_NAME}/" npm run build
+
+    # Append history.json (best-effort; if Pages URL is not available yet, it will start fresh).
+    - |
+      HISTORY_SOURCE_URL="${CI_PAGES_URL}/history.json" \
+      REPORT_PATH="dist/monitor-report.json" \
+      HISTORY_PATH="dist/history.json" \
+      HISTORY_MAX="720" \
+      GITHUB_RUN_URL="" \
+      node ./scripts/update-history.js || true
+
     - rm -rf public && mkdir -p public
     - cp -r dist/* public/
+    - ls -la public | sed -n '1,160p'
   artifacts:
     paths:
       - public

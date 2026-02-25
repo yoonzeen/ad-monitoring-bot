@@ -132,59 +132,77 @@ export function MonitorReportPanel() {
             <div className="diag">
               <details className="diagItem">
                 <summary>
-                  JS 에러 (pageerror) <span className="count">{state.report.diagnostics.pageErrors?.length ?? 0}</span>
+                  추가 정보{' '}
+                  <span className="count">
+                    {(state.report.diagnostics.pageErrors?.length ?? 0) +
+                      (state.report.diagnostics.consoleMessages?.length ?? 0) +
+                      (state.report.diagnostics.requestFailures?.length ?? 0)}
+                  </span>
                 </summary>
-                {state.report.diagnostics.pageErrors?.length ? (
-                  <ul className="diagList">
-                    {state.report.diagnostics.pageErrors.map((e, idx) => (
-                      <li key={`${idx}-${e.message}`}>
-                        <div className="diagMain">{e.message}</div>
-                        {e.stack ? <pre className="diagStack">{e.stack}</pre> : null}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="muted">없음</p>
-                )}
-              </details>
 
-              <details className="diagItem">
-                <summary>
-                  콘솔 메시지 (error/warn) <span className="count">{state.report.diagnostics.consoleMessages?.length ?? 0}</span>
-                </summary>
-                {state.report.diagnostics.consoleMessages?.length ? (
-                  <ul className="diagList">
-                    {state.report.diagnostics.consoleMessages.map((m, idx) => (
-                      <li key={`${idx}-${m.type}-${m.text}`}>
-                        <span className={`pill ${m.type}`}>{m.type}</span> {m.text}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="muted">없음</p>
-                )}
-              </details>
+                <div className="diagChips">
+                  <span className="chip">
+                    페이지 <b>{state.report.diagnostics.pageErrors?.length ?? 0}</b>
+                  </span>
+                  <span className="chip">
+                    콘솔 <b>{state.report.diagnostics.consoleMessages?.length ?? 0}</b>
+                  </span>
+                  <span className="chip">
+                    요청 <b>{state.report.diagnostics.requestFailures?.length ?? 0}</b>
+                  </span>
+                </div>
 
-              <details className="diagItem">
-                <summary>
-                  네트워크 실패 (requestfailed){' '}
-                  <span className="count">{state.report.diagnostics.requestFailures?.length ?? 0}</span>
-                </summary>
-                {state.report.diagnostics.requestFailures?.length ? (
-                  <ul className="diagList">
-                    {state.report.diagnostics.requestFailures.map((r, idx) => (
-                      <li key={`${idx}-${r.url}-${r.errorText}`}>
-                        <div className="diagMain">
-                          <span className="pill info">{r.method}</span>{' '}
-                          <span className="pill info">{r.resourceType}</span> {r.errorText}
-                        </div>
-                        <div className="diagUrl">{r.url}</div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="muted">없음</p>
-                )}
+                <div className="diagSections">
+                  <div className="diagSection">
+                    <div className="diagSectionTitle">페이지</div>
+                    {state.report.diagnostics.pageErrors?.length ? (
+                      <ul className="diagList">
+                        {state.report.diagnostics.pageErrors.map((e, idx) => (
+                          <li key={`${idx}-${e.message}`}>
+                            <div className="diagMain">{e.message}</div>
+                            {e.stack ? <pre className="diagStack">{e.stack}</pre> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="muted">없음</p>
+                    )}
+                  </div>
+
+                  <div className="diagSection">
+                    <div className="diagSectionTitle">콘솔</div>
+                    {state.report.diagnostics.consoleMessages?.length ? (
+                      <ul className="diagList">
+                        {state.report.diagnostics.consoleMessages.map((m, idx) => (
+                          <li key={`${idx}-${m.type}-${m.text}`}>
+                            <span className={`pill ${m.type}`}>{m.type}</span> {m.text}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="muted">없음</p>
+                    )}
+                  </div>
+
+                  <div className="diagSection">
+                    <div className="diagSectionTitle">요청</div>
+                    {state.report.diagnostics.requestFailures?.length ? (
+                      <ul className="diagList">
+                        {state.report.diagnostics.requestFailures.map((r, idx) => (
+                          <li key={`${idx}-${r.url}-${r.errorText}`}>
+                            <div className="diagMain">
+                              <span className="pill info">{r.method}</span>{' '}
+                              <span className="pill info">{r.resourceType}</span> {r.errorText}
+                            </div>
+                            <div className="diagUrl">{r.url}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="muted">없음</p>
+                    )}
+                  </div>
+                </div>
               </details>
             </div>
           ) : null}
@@ -194,8 +212,16 @@ export function MonitorReportPanel() {
               <summary>
                 최근 실행 기록 <span className="count">{history.kind === 'loaded' ? history.items.length : 0}</span>
               </summary>
-              <div style={{ marginTop: 10 }}>
-                <button type="button" onClick={loadHistory} disabled={history.kind === 'loading'}>
+              <div className='btnGhostWrap'>
+                <button
+                  type="button"
+                  className="btnGhost"
+                  onClick={loadHistory}
+                  disabled={history.kind === 'loading'}
+                >
+                  <span className="btnIcon" aria-hidden="true">
+                    ↻
+                  </span>
                   기록 새로고침
                 </button>
               </div>
@@ -205,15 +231,9 @@ export function MonitorReportPanel() {
                   {history.items.slice(0, 30).map((it, idx) => (
                     <li key={`${idx}-${it.checkedAt}`}>
                       <div className="diagMain">
-                        <span className={`pill ${it.ok ? 'info' : 'error'}`}>{it.ok ? 'OK' : 'FAIL'}</span>
-                        {formatDate(it.checkedAt)} / HTTP {it.status} / {it.durationMs}ms
+                        {formatDate(it.checkedAt)} · {it.durationMs}ms
                       </div>
-                      <div className="diagUrl">
-                        {it.counts?.consoleErrors ? `console error ${it.counts.consoleErrors} ` : ''}
-                        {it.counts?.pageErrors ? `pageerror ${it.counts.pageErrors} ` : ''}
-                        {it.counts?.requestFailures ? `requestfailed ${it.counts.requestFailures} ` : ''}
-                        {it.failures?.length ? `failures ${it.failures.length}` : ''}
-                      </div>
+                      {it.failures?.length ? <div className="diagUrl">고쳐야 할 항목 {it.failures.length}개</div> : null}
                       {it.meta?.runUrl ? (
                         <div className="diagUrl">
                           <a href={it.meta.runUrl} target="_blank" rel="noreferrer">
