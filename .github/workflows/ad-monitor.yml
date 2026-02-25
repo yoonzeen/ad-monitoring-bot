@@ -55,9 +55,12 @@ jobs:
         run: |
           mkdir -p dist
           if [ -n "${MONITOR_TARGET_URL}" ]; then
-            npm run monitor
+            npm run monitor || true
           else
             echo "MONITOR_TARGET_URL is not set. Skipping monitor."
+          fi
+          if [ ! -f dist/monitor-report.json ]; then
+            echo "monitor-report.json was not produced. Writing placeholder."
             cat > dist/monitor-report.json <<'EOF'
             {
               "ok": false,
@@ -65,7 +68,7 @@ jobs:
               "status": 0,
               "durationMs": 0,
               "checkedAt": "",
-              "failures": ["MONITOR_TARGET_URL is not set"],
+              "failures": ["monitor-report.json was not produced (monitor crashed or misconfigured)"],
               "diagnostics": { "pageErrors": [], "consoleMessages": [], "requestFailures": [] }
             }
             EOF
