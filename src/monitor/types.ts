@@ -25,6 +25,7 @@ export type MonitorHistoryEntry = {
     consoleWarnings: number
     requestFailures: number
   }
+  consoleSample?: { type: string; text: string }[]
   meta?: {
     runId?: string
     runUrl?: string

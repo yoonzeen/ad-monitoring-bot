@@ -265,40 +265,93 @@ export function MonitorReportPanel() {
                             <div className="historyMeta">{summarizeHistoryLine(it)}</div>
                           </div>
                           <div className="historySummaryRight" aria-hidden="true">
-                            <span className="historyPill">상세</span>
                             <span className="historyChevron">▾</span>
                           </div>
                         </summary>
 
                         <div className="historyBody">
-                          <div className="diagChips">
-                            <span className="chip">
-                              페이지 <b>{it.counts?.pageErrors ?? 0}</b>
-                            </span>
-                            <span className="chip">
-                              콘솔 오류 <b>{it.counts?.consoleErrors ?? 0}</b>
-                            </span>
-                            <span className="chip">
-                              콘솔 경고 <b>{it.counts?.consoleWarnings ?? 0}</b>
-                            </span>
-                            <span className="chip">
-                              요청 <b>{it.counts?.requestFailures ?? 0}</b>
-                            </span>
-                            <span className="chip">
-                              항목 <b>{it.failures?.length ?? 0}</b>
-                            </span>
-                          </div>
-
                           {(() => {
-                            const s = summarizeFailures(it.failures, 10)
-                            if (!s) return <p className="muted">고쳐야 할 항목 없음</p>
+                            const consoleErrors = it.counts?.consoleErrors ?? 0
+                            const consoleWarnings = it.counts?.consoleWarnings ?? 0
+                            const pageErrors = it.counts?.pageErrors ?? 0
+                            const requestFailures = it.counts?.requestFailures ?? 0
+                            const s = summarizeFailures(it.failures, 5)
+                            const consoleSample = it.consoleSample ?? []
+
+                            const hasAnyDetail =
+                              consoleErrors ||
+                              consoleWarnings ||
+                              pageErrors ||
+                              requestFailures ||
+                              s ||
+                              consoleSample.length
+
+                            if (!hasAnyDetail) {
+                              return <p className="muted">이 실행에서 특별한 이상은 기록되지 않았습니다.</p>
+                            }
+
                             return (
-                              <ul className="miniList">
-                                {s.shown.map((f) => (
-                                  <li key={f}>{f}</li>
-                                ))}
-                                {s.remaining > 0 ? <li className="miniMore">외 {s.remaining}개</li> : null}
-                              </ul>
+                              <>
+                                <div className="diagChips">
+                                  <span className="chip">
+                                    페이지 <b>{pageErrors}</b>
+                                  </span>
+                                  <span className="chip">
+                                    콘솔 오류 <b>{consoleErrors}</b>
+                                  </span>
+                                  <span className="chip">
+                                    콘솔 경고 <b>{consoleWarnings}</b>
+                                  </span>
+                                  <span className="chip">
+                                    요청 <b>{requestFailures}</b>
+                                  </span>
+                                  <span className="chip">
+                                    항목 <b>{it.failures?.length ?? 0}</b>
+                                  </span>
+                                </div>
+
+                                <ul className="miniList">
+                                  <li>
+                                    콘솔 로그: 오류 {consoleErrors}개, 경고 {consoleWarnings}개
+                                    {consoleErrors || consoleWarnings
+                                      ? ' (광고 스크립트나 페이지 동작 중 경고/에러가 발생했습니다.)'
+                                      : ' (콘솔에서 특별한 이상이 감지되지 않았습니다.)'}
+                                  </li>
+                                  <li>
+                                    페이지 오류: {pageErrors}개
+                                    {pageErrors
+                                      ? ' (JS 런타임 에러가 발생해 일부 기능이 정상 동작하지 않았을 수 있습니다.)'
+                                      : ' (페이지 수준 오류는 기록되지 않았습니다.)'}
+                                  </li>
+                                  <li>
+                                    네트워크 실패: {requestFailures}개
+                                    {requestFailures
+                                      ? ' (광고/추적 스크립트 또는 리소스 요청 중 실패가 있었습니다.)'
+                                      : ' (주요 네트워크 요청 실패는 기록되지 않았습니다.)'}
+                                  </li>
+                                  {consoleSample.length ? (
+                                    <li>
+                                      <ul className="miniConsoleList">
+                                        {consoleSample.map((m, idx) => (
+                                          <li key={`${idx}-${m.text}`}>
+                                            <span className={`pill ${m.type}`}>{m.type}</span> {m.text}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </li>
+                                  ) : null}
+                                  {s ? (
+                                    <>
+                                      {s.shown.map((f) => (
+                                        <li key={f}>규칙 위반: {f}</li>
+                                      ))}
+                                      {s.remaining > 0 ? (
+                                        <li className="miniMore">규칙 위반 항목이 추가로 {s.remaining}개 더 있습니다.</li>
+                                      ) : null}
+                                    </>
+                                  ) : null}
+                                </ul>
+                              </>
                             )
                           })()}
                         </div>

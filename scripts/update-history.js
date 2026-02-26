@@ -34,6 +34,10 @@ function summarize(report) {
   const requestFailures = report?.diagnostics?.requestFailures ?? []
   const consoleErrors = consoleMessages.filter((m) => m?.type === 'error').length
   const consoleWarnings = consoleMessages.filter((m) => m?.type === 'warning').length
+  const consoleSample = consoleMessages.slice(0, 5).map((m) => ({
+    type: m?.type ?? 'log',
+    text: String(m?.text ?? ''),
+  }))
 
   return {
     checkedAt: String(report?.checkedAt ?? ''),
@@ -48,6 +52,7 @@ function summarize(report) {
       consoleWarnings,
       requestFailures: requestFailures.length,
     },
+    consoleSample,
     meta: {
       runId: getEnv('GITHUB_RUN_ID', { defaultValue: '' }),
       runUrl: getEnv('GITHUB_RUN_URL', { defaultValue: '' }),

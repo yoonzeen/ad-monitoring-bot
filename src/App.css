@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 28px 22px 36px;
   min-width: 0;
+  letter-spacing: -0.4px;
 }
 
 .top {
@@ -13,7 +14,7 @@
   margin-bottom: 18px;
   flex-wrap: wrap;
   padding: 16px 16px;
-  border-radius: 18px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background:
     radial-gradient(900px 220px at 0% 0%, rgba(124, 136, 255, 0.16), transparent 60%),
@@ -28,6 +29,7 @@
   font-size: 30px;
   line-height: 1.2;
   letter-spacing: -0.02em;
+  font-family: 'A2z', sans-serif;
 }
 
 .mascot {
@@ -42,7 +44,7 @@
 .mascotFallback {
   width: 148px;
   height: 148px;
-  border-radius: 18px;
+  border-radius: 4px;
 }
 
 .mascotImg {
@@ -58,7 +60,7 @@
 .mascotFallback {
   display: grid;
   place-items: center;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.12em;
   font-size: 14px;
   color: var(--muted);
@@ -90,7 +92,7 @@
 
 .panel {
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 4px;
   background: var(--panel);
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -115,7 +117,7 @@
 
 .panelActions button {
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .panelBody {
@@ -129,7 +131,7 @@
   justify-content: center;
   padding: 4px 10px;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.04em;
   margin-bottom: 12px;
@@ -187,7 +189,7 @@
 
 .okBox,
 .failBox {
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 12px 12px;
 }
 
@@ -202,12 +204,14 @@
 }
 
 .failTitle {
-  font-weight: 800;
+  font-weight: 700;
+  font-size:14px;
   margin-bottom: 8px;
 }
 
 .failList {
   margin: 0;
+  font-size:13px;
   padding-left: 18px;
 }
 
@@ -238,7 +242,7 @@
 
 .chip b {
   color: var(--text);
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .diagSections {
@@ -248,7 +252,7 @@
 }
 
 .diagSectionTitle {
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 6px;
   color: var(--muted);
   font-size: 13px;
@@ -256,7 +260,7 @@
 
 .diagItem {
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   background: color-mix(in srgb, var(--panel) 88%, transparent);
   padding: 10px 12px;
 }
@@ -268,20 +272,9 @@
   grid-template-columns: 1fr auto auto;
   align-items: center;
   column-gap: 10px;
-  padding: 4px 0;
+  padding: 6px;
   user-select: none;
-}
-.diagItem summary::-webkit-details-marker {
-  display: none;
-}
-.diagItem summary::after {
-  content: '▾';
-  opacity: 0.75;
-  transform: translateY(-1px);
-  margin-left: 10px;
-}
-details[open].diagItem summary::after {
-  content: '▴';
+  font-size:14px;
 }
 
 .count {
@@ -303,6 +296,10 @@ details[open].diagItem summary::after {
   padding-left: 18px;
   display: grid;
   gap: 8px;
+  font-size:13px
+}
+.diagList li {
+  word-break: break-word
 }
 
 .miniList {
@@ -332,7 +329,7 @@ details[open].diagItem summary::after {
 .diagStack {
   margin: 6px 0 0;
   padding: 10px;
-  border-radius: 12px;
+  border-radius: 4px;
   max-width: 100%;
   overflow: auto;
   white-space: pre-wrap;
@@ -349,7 +346,7 @@ details[open].diagItem summary::after {
   justify-content: center;
   padding: 2px 8px;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.02em;
   margin-right: 6px;
@@ -440,7 +437,7 @@ details[open].diagItem summary::after {
   gap: 12px;
   align-items: start;
   padding: 10px 10px;
-  border-radius: 14px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--panel2) 70%, transparent);
 }
@@ -456,7 +453,7 @@ details[open].diagItem summary::after {
 }
 
 .historyWhen {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .historyMeta {
@@ -479,7 +476,7 @@ details[open].diagItem summary::after {
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
   background: color-mix(in srgb, var(--panel2) 55%, transparent);
   color: var(--text);
