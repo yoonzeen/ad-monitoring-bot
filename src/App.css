@@ -427,6 +427,78 @@ details[open].diagItem summary::after {
   margin-top: 18px;
 }
 
+.historyItem {
+  margin-top: 6px;
+}
+
+.historySummaryRow {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel2) 70%, transparent);
+}
+
+.historySummaryRow::-webkit-details-marker {
+  display: none;
+}
+
+.historySummaryText {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.historyWhen {
+  font-weight: 800;
+}
+
+.historyMeta {
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.historySummaryRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.historyPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--panel2) 55%, transparent);
+  color: var(--text);
+}
+
+.historyChevron {
+  display: inline-block;
+  opacity: 0.8;
+  transition: transform 140ms ease;
+}
+
+details[open].historyItem .historyChevron {
+  transform: rotate(180deg);
+}
+
+.historyBody {
+  padding: 10px 6px 2px;
+}
+
 @media (max-width: 560px) {
   .top {
     align-items: flex-start;

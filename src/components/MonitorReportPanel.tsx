@@ -28,6 +28,27 @@ export function MonitorReportPanel() {
     return { shown, remaining }
   }
 
+  const summarizeHistoryLine = (it: MonitorHistoryEntry) => {
+    const consoleErrors = it.counts?.consoleErrors ?? 0
+    const consoleWarnings = it.counts?.consoleWarnings ?? 0
+    const pageErrors = it.counts?.pageErrors ?? 0
+    const requestFailures = it.counts?.requestFailures ?? 0
+
+    const parts: string[] = []
+
+    if (consoleErrors || consoleWarnings) {
+      parts.push(`콘솔 오류 ${consoleErrors}개, 경고 ${consoleWarnings}개`)
+    } else {
+      parts.push('콘솔 이상 없음')
+    }
+
+    if (pageErrors) parts.push(`페이지 오류 ${pageErrors}개`)
+    if (requestFailures) parts.push(`요청 실패 ${requestFailures}개`)
+    if (it.failures?.length) parts.push(`고쳐야 할 항목 ${it.failures.length}개`)
+
+    return parts.join(' · ')
+  }
+
   const load = useCallback(async () => {
     setState({ kind: 'loading' })
     try {
@@ -219,7 +240,7 @@ export function MonitorReportPanel() {
               <summary>
                 최근 실행 기록 <span className="count">{history.kind === 'loaded' ? history.items.length : 0}</span>
               </summary>
-              <div className='btnGhostWrap'>
+              <div className="btnGhostWrap">
                 <button
                   type="button"
                   className="btnGhost"
@@ -237,27 +258,51 @@ export function MonitorReportPanel() {
                 <ul className="diagList">
                   {history.items.slice(0, 30).map((it, idx) => (
                     <li key={`${idx}-${it.checkedAt}`}>
-                      <div className="diagMain">
-                        {formatDate(it.checkedAt)} · {it.durationMs}ms
-                      </div>
-                      <div className="diagUrl">
-                        {(it.counts?.consoleErrors ?? 0) || (it.counts?.consoleWarnings ?? 0)
-                          ? `콘솔 오류 ${it.counts?.consoleErrors ?? 0} · 경고 ${it.counts?.consoleWarnings ?? 0}`
-                          : '콘솔 이상 없음'}
-                        {it.failures?.length ? ` · 고쳐야 할 항목 ${it.failures.length}개` : ''}
-                      </div>
-                      {(() => {
-                        const s = summarizeFailures(it.failures, 3)
-                        if (!s) return null
-                        return (
-                          <ul className="miniList">
-                            {s.shown.map((f) => (
-                              <li key={f}>{f}</li>
-                            ))}
-                            {s.remaining > 0 ? <li className="miniMore">외 {s.remaining}개</li> : null}
-                          </ul>
-                        )
-                      })()}
+                      <details className="historyItem">
+                        <summary className="historySummaryRow">
+                          <div className="historySummaryText">
+                            <div className="historyWhen">{formatDate(it.checkedAt)} · {it.durationMs}ms</div>
+                            <div className="historyMeta">{summarizeHistoryLine(it)}</div>
+                          </div>
+                          <div className="historySummaryRight" aria-hidden="true">
+                            <span className="historyPill">상세</span>
+                            <span className="historyChevron">▾</span>
+                          </div>
+                        </summary>
+
+                        <div className="historyBody">
+                          <div className="diagChips">
+                            <span className="chip">
+                              페이지 <b>{it.counts?.pageErrors ?? 0}</b>
+                            </span>
+                            <span className="chip">
+                              콘솔 오류 <b>{it.counts?.consoleErrors ?? 0}</b>
+                            </span>
+                            <span className="chip">
+                              콘솔 경고 <b>{it.counts?.consoleWarnings ?? 0}</b>
+                            </span>
+                            <span className="chip">
+                              요청 <b>{it.counts?.requestFailures ?? 0}</b>
+                            </span>
+                            <span className="chip">
+                              항목 <b>{it.failures?.length ?? 0}</b>
+                            </span>
+                          </div>
+
+                          {(() => {
+                            const s = summarizeFailures(it.failures, 10)
+                            if (!s) return <p className="muted">고쳐야 할 항목 없음</p>
+                            return (
+                              <ul className="miniList">
+                                {s.shown.map((f) => (
+                                  <li key={f}>{f}</li>
+                                ))}
+                                {s.remaining > 0 ? <li className="miniMore">외 {s.remaining}개</li> : null}
+                              </ul>
+                            )
+                          })()}
+                        </div>
+                      </details>
                     </li>
                   ))}
                 </ul>
