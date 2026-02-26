@@ -21,6 +21,13 @@ export function MonitorReportPanel() {
   const [state, setState] = useState<LoadState>({ kind: 'idle' })
   const [history, setHistory] = useState<HistoryState>({ kind: 'idle' })
 
+  const summarizeFailures = (failures: string[] | undefined, maxItems = 2) => {
+    if (!failures?.length) return null
+    const shown = failures.slice(0, maxItems)
+    const remaining = failures.length - shown.length
+    return { shown, remaining }
+  }
+
   const load = useCallback(async () => {
     setState({ kind: 'loading' })
     try {
@@ -233,14 +240,24 @@ export function MonitorReportPanel() {
                       <div className="diagMain">
                         {formatDate(it.checkedAt)} · {it.durationMs}ms
                       </div>
-                      {it.failures?.length ? <div className="diagUrl">고쳐야 할 항목 {it.failures.length}개</div> : null}
-                      {it.meta?.runUrl ? (
-                        <div className="diagUrl">
-                          <a href={it.meta.runUrl} target="_blank" rel="noreferrer">
-                            workflow run 보기
-                          </a>
-                        </div>
-                      ) : null}
+                      <div className="diagUrl">
+                        {(it.counts?.consoleErrors ?? 0) || (it.counts?.consoleWarnings ?? 0)
+                          ? `콘솔 오류 ${it.counts?.consoleErrors ?? 0} · 경고 ${it.counts?.consoleWarnings ?? 0}`
+                          : '콘솔 이상 없음'}
+                        {it.failures?.length ? ` · 고쳐야 할 항목 ${it.failures.length}개` : ''}
+                      </div>
+                      {(() => {
+                        const s = summarizeFailures(it.failures, 3)
+                        if (!s) return null
+                        return (
+                          <ul className="miniList">
+                            {s.shown.map((f) => (
+                              <li key={f}>{f}</li>
+                            ))}
+                            {s.remaining > 0 ? <li className="miniMore">외 {s.remaining}개</li> : null}
+                          </ul>
+                        )
+                      })()}
                     </li>
                   ))}
                 </ul>

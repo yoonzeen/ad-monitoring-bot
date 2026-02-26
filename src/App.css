@@ -305,6 +305,19 @@ details[open].diagItem summary::after {
   gap: 8px;
 }
 
+.miniList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.miniMore {
+  opacity: 0.85;
+}
+
 .diagMain {
   margin-bottom: 4px;
 }
