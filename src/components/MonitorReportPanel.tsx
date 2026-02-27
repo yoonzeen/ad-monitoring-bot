@@ -313,21 +313,12 @@ export function MonitorReportPanel() {
                                 <ul className="miniList">
                                   <li>
                                     콘솔 로그: 오류 {consoleErrors}개, 경고 {consoleWarnings}개
-                                    {consoleErrors || consoleWarnings
-                                      ? ' (광고 스크립트나 페이지 동작 중 경고/에러가 발생했습니다.)'
-                                      : ' (콘솔에서 특별한 이상이 감지되지 않았습니다.)'}
                                   </li>
                                   <li>
                                     페이지 오류: {pageErrors}개
-                                    {pageErrors
-                                      ? ' (JS 런타임 에러가 발생해 일부 기능이 정상 동작하지 않았을 수 있습니다.)'
-                                      : ' (페이지 수준 오류는 기록되지 않았습니다.)'}
                                   </li>
                                   <li>
                                     네트워크 실패: {requestFailures}개
-                                    {requestFailures
-                                      ? ' (광고/추적 스크립트 또는 리소스 요청 중 실패가 있었습니다.)'
-                                      : ' (주요 네트워크 요청 실패는 기록되지 않았습니다.)'}
                                   </li>
                                   {consoleSample.length ? (
                                     <li>
